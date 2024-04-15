@@ -439,11 +439,13 @@ colnames(oscillo_global_adiv) <- c("Observed", "shannon", "shannon_bin", "bmi", 
 
 # Binary model (glm.bin)
 Anova(glm(shannon_bin ~ bmi + sex + age, data = oscillo_global_adiv, family = binomial(link = logit)))
+oscillo_glm.bin <- summary(glm(shannon_bin ~ bmi + sex + age, data = oscillo_global_adiv, family = binomial(link = logit)))
 
 # Continuous model (glm.cont)
 # remove columns where all values are 0 (for numeric values)   
 oscillo_shannon_cont <- oscillo_global_adiv[oscillo_global_adiv$shannon >0,]
 Anova(glm(shannon ~ bmi + sex + age, data = oscillo_shannon_cont, family = Gamma(link = log)))
+oscillo_glm.cont <- summary(glm(shannon ~ bmi + sex + age, data = oscillo_shannon_cont, family = Gamma(link = log)))
 
 # scatterplot
 ggplot(oscillo_shannon_cont, aes(x = bmi, y = shannon, color = bmi_class, shape = non_westernized)) +
@@ -467,11 +469,13 @@ colnames(rumino_global_adiv) <- c("Observed", "shannon", "shannon_bin", "bmi", "
 
 # Binary model (glm.bin)
 Anova(glm(shannon_bin ~ bmi + sex + age, data = rumino_global_adiv, family = binomial(link = logit)))
+rumino_glm.bin <- summary(glm(shannon_bin ~ bmi + sex + age, data = rumino_global_adiv, family = binomial(link = logit)))
 
 # Continuous model (glm.cont)
 # remove columns where all values are 0 (for numeric values)   
 rumino_shannon_cont <- rumino_global_adiv[rumino_global_adiv$shannon >0,]
 Anova(glm(shannon ~ bmi + sex + age, data = rumino_shannon_cont, family = Gamma(link = log)))
+rumino_glm.cont <- summary(glm(shannon ~ bmi + sex + age, data = rumino_shannon_cont, family = Gamma(link = log)))
 
 # scatterplot
 ggplot(rumino_shannon_cont, aes(x = bmi, y = shannon, color = bmi_class, shape = non_westernized)) +
@@ -495,11 +499,13 @@ colnames(acutali_global_adiv) <- c("Observed", "shannon", "shannon_bin", "bmi", 
 
 # Binary model (glm.bin)
 Anova(glm(shannon_bin ~ bmi + sex + age, data = acutali_global_adiv, family = binomial(link = logit)))
+acutali_glm.bin <- summary(glm(shannon_bin ~ bmi + sex + age, data = acutali_global_adiv, family = binomial(link = logit)))
 
 # Continuous model (glm.cont)
 # remove columns where all values are 0 (for numeric values)   
 acutali_shannon_cont <- acutali_global_adiv[acutali_global_adiv$shannon >0,]
 Anova(glm(shannon ~ bmi + sex + age, data = acutali_shannon_cont, family = Gamma(link = log)))
+acutali_glm.cont <- summary(glm(shannon ~ bmi + sex + age, data = acutali_shannon_cont, family = Gamma(link = log)))
 
 # scatterplot
 ggplot(acutali_shannon_cont, aes(x = bmi, y = shannon, color = bmi_class, shape = non_westernized)) +
@@ -523,15 +529,26 @@ colnames(lachno_global_adiv) <- c("Observed", "shannon", "shannon_bin", "bmi", "
 
 # Binary model (glm.bin)
 Anova(glm(shannon_bin ~ bmi + sex + age, data = lachno_global_adiv, family = binomial(link = logit)))
+lachno_glm.bin <- summary(glm(shannon_bin ~ bmi + sex + age, data = lachno_global_adiv, family = binomial(link = logit)))
 
 # Continuous model (glm.cont)
 # remove columns where all values are 0 (for numeric values)   
 lachno_shannon_cont <- lachno_global_adiv[lachno_global_adiv$shannon >0,]
 Anova(glm(shannon ~ bmi + sex + age, data = lachno_shannon_cont, family = Gamma(link = log)))
+lachno_glm.cont <- summary(glm(shannon ~ bmi + sex + age, data = lachno_shannon_cont, family = Gamma(link = log)))
+#tryCatch(glm(shannon ~ bmi + sex + age, data = lachno_shannon_cont, family = Gamma(link = log)), error=function(e) NULL)
+map_df(lachno_glm.cont, tidy, .id="Lachnospiraceae")
 
 # scatterplot
 ggplot(lachno_shannon_cont, aes(x = bmi, y = shannon, color = bmi_class, shape = non_westernized)) +
   geom_point()
+
+
+### FDR-adjusted p-values for continuous GLMs (glm.cont) for the families of interest
+families_fdr <- rbind(oscillo_glm.cont$coefficients, rumino_glm.cont$coefficients, acutali_glm.cont$coefficients, lachno_glm.cont$coefficients)
+families_fdr <- as.data.frame(families_fdr)
+families_fdr <- p.adjust(families_fdr[c(2,6,10,14),4], method="fdr")
+
 
 
 ### Vescimonas or g__CAG-83 (Oscillospiraceae) ----

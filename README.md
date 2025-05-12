@@ -1,7 +1,7 @@
 # Gut microbiome diversity within Clostridia is negatively associated with human obesity
-Salazar-Jaramillo et al., 2023
+Salazar-Jaramillo et al., 2024
 
-doi:
+doi: https://doi.org/10.1128/msystems.00627-24
 
 This repo contains the R scripts and data to reproduce the results reported in the aforementioned article by Salazar-Jaramillo et al.
 
